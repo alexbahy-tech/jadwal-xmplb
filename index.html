@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jadwal Pelajaran Kelas XMPLB</title>
+<style>
+:root {
+    --primary: #001f3f;        /* Navy Blue */
+    --primary-dark: #001329;
+    --secondary: #fdfd96;      /* Soft Yellow */
+    --accent: #ffd700;         /* Gold */
+    --break: #e9e9e9;
+    --text-dark: #2d3436;
+    --white: #ffffff;
+    --ivory: #fffef0;
+    --shadow-md: 0 8px 24px rgba(0, 31, 63, 0.15);
+    --shadow-lg: 0 16px 48px rgba(0, 31, 63, 0.2);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #001f3f 0%, #003366 40%, #fdfd96 100%);
+    min-height: 100vh;
+    padding: 20px;
+    position: relative;
+    overflow-x: hidden;
+    background-attachment: fixed;
+}
+
+/* Animasi Latar Belakang */
+body::before {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: backgroundMove 20s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes backgroundMove {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(50px, 50px); }
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 35px;
+    background: rgba(0, 31, 63, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 25px;
+    padding: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: var(--shadow-lg);
+    animation: slideDown 0.6s ease-out;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+header h1 {
+    color: var(--white);
+    font-size: 2.5rem;
+    font-weight: 800;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+header p {
+    color: var(--secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.controls {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+select, input, .btn-exit {
+    padding: 14px 24px;
+    border-radius: 50px;
+    border: none;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: var(--shadow-md);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--primary);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-exit {
+    background: #e74c3c;
+    color: white;
+}
+
+.btn-exit:hover {
+    background: #c0392b;
+    transform: translateY(-2px);
+}
+
+.schedule-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.day-column {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    overflow: hidden;
+}
+
+.day-header {
+    text-align: center;
+    padding: 18px;
+    background: rgba(0, 31, 63, 0.7);
+    color: var(--secondary);
+    font-weight: 800;
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--accent);
+}
+
+.day-content { padding: 15px; }
+
+.card {
+    background: var(--ivory);
+    border-radius: 15px;
+    padding: 18px;
+    margin-bottom: 12px;
+    border-left: 5px solid var(--primary);
+    transition: all 0.3s ease;
+}
+
+.card:hover { transform: translateX(8px); }
+
+.card.istirahat {
+    background: #f0f0f0;
+    border-left: 5px solid #95a5a6;
+    opacity: 0.9;
+}
+
+.card.active {
+    background: linear-gradient(135deg, #001f3f 0%, #004080 100%);
+    color: white;
+    border-left: 5px solid var(--accent);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+.card.active .time, .card.active .subject, .card.active .teacher { color: white; }
+
+.time {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 5px;
+    display: block;
+}
+
+.subject {
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 5px;
+}
+
+.teacher {
+    font-size: 0.85rem;
+    color: #636e72;
+}
+
+@media (max-width: 768px) {
+    header h1 { font-size: 1.8rem; }
+    .controls { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1> 📚 Jadwal Pelajaran Kelas XMPLB</h1>
+        <p>SMK NEGERI 1 MALUKU TENGAH</p>
+    </header>
+
+    <div class="controls">
+        <select id="filter-day">
+            <option value="all"> 📅 Semua Hari</option>
+            <option value="Sen">Senin</option>
+            <option value="Sel">Selasa</option>
+            <option value="Rab">Rabu</option>
+            <option value="Kam">Kamis</option>
+            <option value="Jum">Jumat</option>
+        </select>
+        
+        <input type="text" id="search-input" placeholder=" 🔍 Cari Pelajaran/Guru...">
+
+        <a href="#" class="btn-exit" onclick="alert('Link sedang dalam proses')">
+            <span>🚪</span> Keluar
+        </a>
+    </div>
+
+    <div id="grid-container" class="schedule-grid"></div>
+</div>
+
+<script>
+const rawData = {
+    "schedule": [
+        // SENIN
+        { "day": "Sen", "time": "07:30 - 10:10", "subject": "Dasar Program Keahlian MPLB", "teacher": "B.W. Tanamal, S.Pd" },
+        { "day": "Sen", "time": "10:10 - 10:30", "subject": "ISTIRAHAT 1", "teacher": "-", "type": "break" },
+        { "day": "Sen", "time": "10:30 - 11:50", "subject": "Bahasa Inggris", "teacher": "Yulan Talarima, S.Pd.,Gr" },
+        { "day": "Sen", "time": "11:50 - 13:10", "subject": "Matematika", "teacher": "T.M.A. Kappuw, S.Pd" },
+        { "day": "Sen", "time": "13:10 - 13:30", "subject": "ISTIRAHAT 2", "teacher": "-", "type": "break" },
+        { "day": "Sen", "time": "13:30 - 15:30", "subject": "Projek IPAS", "teacher": "H.S. Kapressy, S.Pd., M.Pd" },
+
+        // SELASA
+        { "day": "Sel", "time": "07:30 - 08:50", "subject": "Sejarah", "teacher": "V. Ruhukail, S.Pd" },
+		{ "day": "Sel", "time": "08:50 - 10:10", "subject": "Pend. Jasmani & Olahraga", "teacher": "O.A. Lawalata, S.Pd" },
+        { "day": "Sel", "time": "10:50 - 10:30", "subject": "ISTIRAHAT 1", "teacher": "-", "type": "break" },
+        { "day": "Sel", "time": "10:30 - 11:10", "subject": "Pend. Jasmani & Olahraga", "teacher": "O.A. Lawalata, S.Pd" },
+		{ "day": "Sel", "time": "11:10 - 13:10", "subject": "Projek IPAS", "teacher": "H.S. Kapressy, S.Pd., M.Pd" },
+        { "day": "Sel", "time": "13:10 - 13:30", "subject": "ISTIRAHAT 2", "teacher": "-", "type": "break" },
+        { "day": "Sel", "time": "13:30 - 15:30", "subject": "Dasar Program Keahlian", "teacher": "B.W. Tanamal,S.Pd" },
+
+        // RABU
+        { "day": "Rab", "time": "07:30 - 08:50", "subject": "Pendidikan Pancasila", "teacher": "E.A. Wacanno, S.Pd" },
+		{ "day": "Rab", "time": "08:50 - 10:10", "subject": "Kokurikuler PJBL", "teacher": "T.M.A. Kappuw, S.Pd" },
+        { "day": "Rab", "time": "10:10 - 10:30", "subject": "ISTIRAHAT 1", "teacher": "-", "type": "break" },
+        { "day": "Rab", "time": "10:30 - 11:10", "subject": "Kokurikuler PJBL", "teacher": "T.M.A. Kappuw, S.Pd" },
+        { "day": "Rab", "time": "11:10 - 13:10", "subject": "Dasar Program Keahlian MPLB", "teacher": "B.W. Tanamal, S.Pd" },
+        { "day": "Rab", "time": "13:10 - 13:30", "subject": "ISTIRAHAT 2", "teacher": "-", "type": "break" },
+        { "day": "Rab", "time": "13:30 - 15:30", "subject": "Bahasa Indonesia", "teacher": "Suharja Duhalim, S.Pd" },
+
+        // KAMIS
+        { "day": "Kam", "time": "07:30 - 09:30", "subject": "Dasar Program Keahlian MPLB", "teacher": "B.W. Tanamal, S.Pd" },
+		{ "day": "Kam", "time": "09:30 - 10:10", "subject": "Kokurikuler PJBL", "teacher": "T.M.A. Kappuw, S.Pd" },
+        { "day": "Kam", "time": "10:10 - 10:30", "subject": "ISTIRAHAT 1", "teacher": "-", "type": "break" },
+        { "day": "Kam", "time": "10:30 - 11:10", "subject": "Kokurikuler PJBL", "teacher": "T.M.A. Kappuw, S.Pd" },
+        { "day": "Kam", "time": "11:10 - 13:10", "subject": "Pend. Agama (PAI/PAK)", "teacher": "Budiarto Tahidi, S.Pd/Allen Matinahoruw, S.PdK" },
+        { "day": "Kam", "time": "13:10 - 13:30", "subject": "ISTIRAHAT 2", "teacher": "-", "type": "break" },
+        { "day": "Kam", "time": "13:30 - 15:30", "subject": "Seni Budaya (Musik)", "teacher": "R. A. Ririhena, SM.Gr" },
+
+        // JUMAT (1 Kali Istirahat) 
+        { "day": "Jum", "time": "07:30 - 08:50", "subject": "Muatan Lokal (Membatik)", "teacher": "J. Resiloy" },
+        { "day": "Jum", "time": "08:50 - 10:10", "subject": "Informatika", "teacher": "Latumeirissa Allcresdo, S.Pd" },
+        { "day": "Jum", "time": "10:10 - 10:30", "subject": "ISTIRAHAT", "teacher": "-", "type": "break" },
+        { "day": "Jum", "time": "10:30 - 12:30", "subject": "Informatika", "teacher": "Latumeirissa Allcresdo" }
+    ]
+};
+
+const container = document.getElementById('grid-container');
+const dayFilter = document.getElementById('filter-day');
+const searchInput = document.getElementById('search-input');
+
+function checkActive(timeStr, dayAbbr) {
+    const now = new Date();
+    const daysMap = { 'Min':0, 'Sen': 1, 'Sel': 2, 'Rab': 3, 'Kam': 4, 'Jum': 5, 'Sab':6 };
+    if (now.getDay() !== daysMap[dayAbbr]) return false;
+    const [start, end] = timeStr.split(' - ');
+    const parseTime = (t) => {
+        const [h, m] = t.split(':').map(Number);
+        return h * 60 + m;
+    };
+    const current = now.getHours() * 60 + now.getMinutes();
+    return current >= parseTime(start) && current <= parseTime(end);
+}
+
+function render() {
+    container.innerHTML = '';
+    const selectedDay = dayFilter.value;
+    const search = searchInput.value.toLowerCase();
+    const days = selectedDay === 'all' ? ['Sen', 'Sel', 'Rab', 'Kam', 'Jum'] : [selectedDay];
+
+    days.forEach(d => {
+        const dayNameFull = { Sen: 'Senin', Sel: 'Selasa', Rab: 'Rabu', Kam: 'Kamis', Jum: 'Jumat' }[d];
+        const dayItems = rawData.schedule.filter(i => 
+            i.day === d && 
+            (i.subject.toLowerCase().includes(search) || i.teacher.toLowerCase().includes(search))
+        );
+
+        if (dayItems.length > 0) {
+            const col = document.createElement('div');
+            col.className = 'day-column';
+            col.innerHTML = `<div class="day-header">${dayNameFull}</div><div class="day-content"></div>`;
+            const contentDiv = col.querySelector('.day-content');
+
+            dayItems.forEach(item => {
+                const isActive = checkActive(item.time, item.day);
+                const isBreak = item.type === 'break';
+                const card = document.createElement('div');
+                card.className = `card ${isBreak ? 'istirahat' : ''} ${isActive ? 'active' : ''}`;
+                
+                card.innerHTML = `
+                    <span class="time"> 🕒 ${item.time} ${isActive ? '• SEKARANG' : ''}</span>
+                    <div class="subject">${item.subject}</div>
+                    ${!isBreak ? `<div class="teacher"> 👤 ${item.teacher}</div>` : ''}
+                `;
+                contentDiv.appendChild(card);
+            });
+            container.appendChild(col);
+        }
+    });
+}
+
+dayFilter.addEventListener('change', render);
+searchInput.addEventListener('input', render);
+render();
+setInterval(render, 60000);
+</script>
+</body>
+</html>
